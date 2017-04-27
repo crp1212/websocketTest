@@ -47,12 +47,14 @@ io.on('connection',function(socket){
 		})
 	})
 	socket.on('sendFile',function(data){
-		var options={
-
+		var dataType;
+		console.log(data.name)
+		if(data.name.search(/\.jpg$|\.gif$|\.png$/i)!=-1){
+			dataType='image'
 		}
-		fs.writeFile(__dirname+'/src/file/'+data.name,data.filedata,function(){
-			socket.emit('selfFile',{url:'file/'+data.name,username:usernames,filename:data.name});
-			socket.broadcast.emit('otherFile',{url:'file/'+data.name,username:usernames,filename:data.name});//向其他用户广播自己的内容
+		fs.writeFile(__dirname+'/src/upload/'+data.name,data.filedata,function(){
+			socket.emit('selfFile',{url:'upload/'+data.name,username:usernames,filename:data.name,dataType:dataType});
+			socket.broadcast.emit('otherFile',{url:'upload/'+data.name,username:usernames,filename:data.name,dataType:dataType});//向其他用户广播自己的内容
 		})
 	})
 	function onlineRemind(){

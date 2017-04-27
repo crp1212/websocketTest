@@ -1,0 +1,164 @@
+*{margin:0;padding: 0;}
+	header{height: 40px;background:black;color:white;line-height: 40px;text-indent: 10px}
+	body{background: #efeff4;padding-bottom: 60px}
+	.onlinePeople{height:40px;line-height:40px;text-indent: 10px}
+	.remind{height:40px;line-height: 40px;text-align: center;}
+	.mainDiv{
+		overflow:hidden;
+		margin:10px 0;
+	}
+	.fr{float:right;}
+	.mainDiv .content{
+		display: inline-block;
+		min-width: 40px;
+	    min-height: 30px;
+	    border-radius: 10px;
+	    max-width: 40%;
+	    word-wrap: break-word;
+	    padding: 8px;
+	    text-align: center;
+   	    line-height: 30px;
+   	    position: relative;
+   	    background: #ADFF2F;
+	}
+	.mainDiv .content:after{
+		content:"";
+		display: inline-block;	
+		position: absolute;
+	    top: 8px;
+	}
+	.mainDiv .othername{
+		display:inline-block;
+		margin:0 10px;
+		vertical-align: top
+	}
+	.otherPeople .content:after{
+		border-right: 0px solid red;
+		border-left: 10px solid #ADFF2F;
+		border-top: 5px solid #efeff4;
+		border-bottom: 5px solid #efeff4;
+		right: -9px
+	}
+	.myself .content:after{
+		border-right: 10px solid #ADFF2F;
+		border-left: 0px solid #ADFF2F;
+		border-top: 5px solid #efeff4;
+		border-bottom: 5px solid #efeff4;
+		left: -9px
+	}
+	.myself{overflow: hidden;}
+	.myself .content{
+
+	}
+	.cover{
+		position: absolute;
+		width:100vw;
+		height:100vh;
+		background:rgba(0,0,0,0.4);
+		z-index:10;
+		top:0;
+	}
+	.sendName{
+		width:100%;
+		height:50px;
+		line-height: 50px;
+		z-index:100;
+		position:absolute;
+		top:50vh;
+		text-align: center;
+	}
+	.sendName .nametext{
+		display:inline-block;
+		width:80%;
+		text-align: center;
+	}
+	.nametext input{
+		height:30px;
+		text-indent: 5px
+	}
+	.nametext button{
+		height:30px;
+		padding:5px;
+	}
+	footer{
+		height:80px;
+		line-height:40px;
+		position: fixed;
+		bottom:0px;
+		width:100%;
+		padding:10px;
+	}
+	footer textarea{
+		width:80%;
+		height:20px;
+		padding:10px;
+		border-radius: 10px;
+		resize: none;
+	}
+	footer button{
+	    display: inline-block;
+	    width: 10%;
+	    height: 30px;
+	    position: relative;
+	    /* vertical-align: top; */
+	    top: -15px;
+	}
+	.filebar{
+		height:40px;
+		border-bottom:gray 1px solid ;
+		border-top:gray 1px solid ;
+		overflow: hidden;
+	}
+	.filebar img{
+		margin:2.5px ;
+		width:35px;
+		height:35px;
+		float:left;
+	}
+	#imgFile{display:none;}
+	.d_n{display:none;}
+	.fileContent{
+		width:200px;
+		height:50px;
+		line-height: 50px;
+		border: 1px solid gray;
+		border-radius: 10px;
+		text-indent: 10px;
+		display: inline-block;
+	}
+	.fileContent div{
+		display: inline-block;
+	}
+	.imgContent{
+		width: 100px;
+		display: inline-block;
+	}
+	.imgContent img{width:100%;}
+	/*图片预览*/
+	.preview{
+		position: fixed;
+		width:100vw;
+		height:100vh;
+		text-align: center;
+		background:rgba(0,0,0,0.8);
+		top:0;
+		z-index:1000;
+	}
+	.preview div{
+		width: 80vw;
+		height:100vh;
+		line-height: 100vh;
+		overflow-y: auto;
+		display: inline-block;
+		position: relative
+	}
+	.preview img{
+		max-width: 80%;
+		max-height:80vh;
+		position: absolute;
+	    top: 0;
+	    bottom: 0;
+	    left: 0;
+	    right: 0;
+	    margin: auto;
+	}

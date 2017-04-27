@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+<script src='js/socket.io.js'></script>
+<script src='js/sel.js'></script>
+<link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+<header>websocket聊天室</header>
+<main>
+	<div class='onlinePeople'></div>
+	
+</main>
+<div class='cover'></div>
+<div class='sendName'>
+	<div class='nametext'>
+		<input type="text" placeholder="请输入用户名" id='username'>
+		<button id='done'>确定</button>
+	</div>
+</div>
+<div class="preview d_n">
+	<div><img src="" alt="" id='previewImg'></div>
+</div>
+<footer>
+	<div class='filebar'>
+		<img src="img/img.jpg" class='btnImg' data-for='imgFile' alt="" id='selImg'><input type="file" class='d_n' id='imgFile'>
+		<img src="img/img.jpg" class='btnImg' data-for='uploadFile' alt=""><input type="file"  class='d_n' id='uploadFile'>
+	</div>
+	<textarea name=""  cols="20" rows="10" id='content'></textarea>
+	<button id='submitContent'>提交</button>
+</footer>
+<script>
+	var user={};
+	var socket;
+	var docS=function(node,bool){
+		if(bool){return document.querySelectorAll(node)}
+		else{
+			if(document.querySelector){
+				return document.querySelector(node)
+			}else{
+				if(node.search('.')!=-1){return document.getElementsByClassName(node.slice(1))[0]}
+				else if(node.search('#')!=-1){return document.getElementById(node.slice(1))}
+			}
+		}
+		
+	}
+	docS('#done').addEventListener('click',function(e){
+		docS('.cover').style.display='none';
+		docS('.sendName').style.display='none';
+		user.name=document.getElementById('username').value;
+		socket=socketFn()
+	})
+	sel.each(docS('.btnImg',true),function(x,y){
+		x.addEventListener('click',function(e){
+			console.log('#'+this.getAttribute('data-for'))
+			docS('#'+this.getAttribute('data-for')).click()
+			
+		})
+	})
+	sel.each(docS('input[type="file"]',true),function(x,y){
+		x.addEventListener('change',function(e){
+			var str;
+			if(x.id=='imgFile'){str='image'}
+			console.log(x.id,str)
+			loadFile('#'+x.id,str)
+		})
+	})
+	function socketFn(){
+		var socket =io.connect();
+		socket.emit('username',{username:user.name});
+		socket.on('message',function(msg){
+			
+		})
+		socket.on('disconnect',function(data){
+			console.log('server is disconnected')
+		})
+		socket.on('newuser',function(data){
+			//当有新加入时响应
+			newContent('remind',data,'news')
+		})
+		socket.on('leaveuser',function(data){
+			//离开时响应
+			newContent('remind',data,'leave')
+		})
+		socket.on('selfContent',function(data){
+			newContent('selfContent',data)
+		})
+		socket.on('otherContent',function(data){
+			newContent('otherContent',data)
+		})
+		socket.on('selfFile',function(data){
+			newContent('selfFile',data)
+		})
+		socket.on('otherFile',function(data){
+			newContent('otherFile',data)
+		})
+		socket.on('onlinePeople',function(data){
+			newContent('onlinePeople',data,true)
+		})
+		docS('#submitContent').addEventListener('click',function(){
+			socket.emit('myContent',{"username":user.name,"content":getContent()})
+		})
+		return socket
+	}
+	function newContent(type,data,states){	
+		var ele=document.createElement('div')
+		switch(type){
+			case 'remind':
+				ele.className='remind';
+				if(states=='news'){str=' 加入聊天室'}else{str=' 离开聊天室'}
+				ele.innerHTML=data.username+str;
+			break;
+			case 'selfContent':
+				ele.className='myself mainDiv';
+				ele.innerHTML='<div class="othername fl">'+data.username+'</div><div class="content fl">'+data.content+'</div>'
+			break;
+			case 'otherContent':
+				ele.className='otherPeople mainDiv';
+				ele.innerHTML='<div class="othername fr">'+data.username+'</div><div class="content fr">'+data.content+'</div>'
+			break;
+			case 'selfFile':
+				ele.className='myself mainDiv';
+				console.log(data)
+				if(data.dataType=='image'){
+					var str='<div class="imgContent fl"><img src='+data.url+' onclick="previewFn(this)"></div>'
+				}else{
+					var str='<div class="fileContent fl"><div>文件名:'+data.filename+'</div><div><a href='+data.url+' download='+data.url+'>下载</a></div></div>'
+				}
+				 
+				ele.innerHTML='<div class="othername fl">'+data.username+'</div>'+str
+				
+			break;
+			case 'otherFile':
+				ele.className='otherPeople mainDiv';
+				if(data.dataType=='image'){
+					var str='<div class="imgContent fr"><img src='+data.url+' onclick="previewFn(this)"></div>'
+				}else{
+					var str='<div class="fileContent fr"><div>文件名:'+data.filename+'</div><div><a href='+data.url+' download='+data.url+'>下载</a></div></div>' 
+				}
+				ele.innerHTML='<div class="othername fr">'+data.username+'</div>'+str
+			break;
+			case 'onlinePeople':
+				document.querySelector('.onlinePeople').innerHTML='当前 '+data.users.join(',')+'在线,共'+data.users.length+'人'
+				return ''
+			break;
+		}
+		document.querySelector('main').appendChild(ele)
+
+	}
+	function getContent(){
+		var val=document.getElementById('content').value;
+		console.log(val)
+		document.getElementById('content').value=''
+		return val
+	}
+	function loadFile(node,type){
+		var list=docS(node).files;
+		if(list.length==0){return }
+		rFilter = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
+		sel.each(list,function(x,y){
+			var oFReader = new FileReader()
+			if(type=='image'){
+				if(!rFilter.test(list[y].type)){alert('第'+(Number(y)+1)+'文件格式不对');return ''}
+			}
+			oFReader.readAsArrayBuffer(list[y]);
+			oFReader.onloadend=function(data){
+				console.log('读取成功');console.log(list[y])
+				socket.emit('sendFile',{filedata:data.currentTarget.result,name:list[y].name})
+			}
+		})
+
+	}
+	function previewFn(obj){
+		console.log(obj)
+		var ele=docS('#previewImg');
+		ele.src=obj.src;
+		docS('.preview').classList.remove('d_n')
+	}
+	docS('body').addEventListener('keyup',function(e){
+		if(e.keyCode=='27'){
+			docS('.preview').classList.add('d_n')
+		}
+	})
+</script>
+</body>
+</html>
